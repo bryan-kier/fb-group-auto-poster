@@ -237,8 +237,9 @@ class FacebookGroupSpam:
         with open(f"{PROJECT_ROOT}/sessions/{SOCIAL_MAPS['facebook']['filename']}", "w") as f:
             json.dump(self.page.context.cookies(), f)
         print("[+] Cookie saved successfully!")
-        print("[+] Now set CREATE_SESSION = False and run again.")
-        exit()
+        print("[+] Continuing to post setup...")
+        self.load_cookie()
+        self.post_to_groups()
 
     def load_cookie(self) -> None:
         global POST_CONTENT
