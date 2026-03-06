@@ -17,7 +17,7 @@ A high-performance automation suite for programmatic content distribution across
 ## 🛠 Installation
 
 ### 1. Requirements
-Ensure you have **Python 3.9+** installed on your system.
+Ensure you have [**Python 3.9+**](https://www.python.org/downloads/) installed on your system.
 
 ### 2. Setup Dependencies
 ```bash
