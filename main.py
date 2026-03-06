@@ -5,6 +5,7 @@ from os import path
 import json
 import time
 import random
+import re
 import os
 
 # Safety settings
@@ -279,10 +280,48 @@ class FacebookGroupSpam:
         print("  When you're ready, enter your post content below.")
         print("="*50)
 
-        # Ask for post content
+        # Step 1: Ask for post content
         print("\n  What would you like to post?")
         print("  Paste your Facebook link or type your message.")
         POST_CONTENT = input("  >>> Post content: ").strip()
+
+        # Step 2: Optionally add new target groups
+        print("\n" + "="*50)
+        print("  Do you want to add new target groups?")
+        print("  Enter group URLs one per line.")
+        print("  Press ENTER on an empty line to skip or finish.")
+        print("="*50)
+
+        groups_path = path.join(PROJECT_ROOT, "sessions", "groups.json")
+        existing = []
+        if path.exists(groups_path):
+            with open(groups_path, "r") as f:
+                existing = json.load(f)
+        existing_usernames = {g["username"] for g in existing}
+
+        added_count = 0
+        while True:
+            url = input("  Group URL (or ENTER to continue): ").strip()
+            if not url:
+                break
+            match = re.search(r"facebook\.com/groups/([^/?#\s]+)", url, re.IGNORECASE)
+            if match:
+                username = match.group(1)
+                if username not in existing_usernames:
+                    existing.append({"name": username, "username": username, "status": "straight"})
+                    existing_usernames.add(username)
+                    added_count += 1
+                    print(f"  [+] Added: {username}")
+                else:
+                    print(f"  [~] Already in list: {username}")
+            else:
+                print(f"  [!] Not a valid Facebook group URL, skipped.")
+
+        if added_count > 0:
+            with open(groups_path, "w") as f:
+                json.dump(existing, f, indent=2)
+            print(f"\n  [✓] {added_count} new group(s) saved. Total: {len(existing)} groups.")
+
         print(f"\n[+] Content set! Starting in 3 seconds...")
         time.sleep(3)
 
