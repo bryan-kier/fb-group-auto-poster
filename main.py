@@ -28,7 +28,10 @@ class FacebookGroupSpam:
         self.context = self.browser.new_context(no_viewport=True)
         self.page = self.context.new_page()
 
-        if self.CREATE_SESSION:
+        cookie_path = path.join(PROJECT_ROOT, "sessions", SOCIAL_MAPS["facebook"]["filename"])
+
+        # Auto-detect login: If no cookie exists, or user forces it via CREATE_SESSION
+        if not path.exists(cookie_path) or self.CREATE_SESSION:
             self.generate_cookie()
         else:
             self.load_cookie()
