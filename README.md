@@ -1,4 +1,4 @@
-# 🚀 fb-group-auto-post
+# 🚀 fb-group-auto-poster
 
 A high-performance automation suite for programmatic content distribution across Facebook groups. Built with **Python** and **Playwright** for reliability and human-like interaction.
 
@@ -8,51 +8,66 @@ A high-performance automation suite for programmatic content distribution across
 
 - **⚡️ Rapid Distribution**: Post content to hundreds of groups in a single session.
 - **🛡️ Stealth Mode**: Randomized typing speeds, browsing breaks, and human-like delays to minimize detection.
-- **🍪 Session Preservation**: Persistent cookie management to bypass constant logins and 2FA.
+- **🍪 Session Preservation**: Persistent cookie management to bypass constant logins.
 - **📊 Activity Logging**: Real-time tracking of successful posts and automated cycle resets.
-- **� Precision Targeting**: Easily configurable group queues via JSON.
+- **🎯 Precision Targeting**: Easily configurable group queues via JSON.
 
 ---
 
-## 🛠 Installation
+## 🛠 Setup Guide
 
-### 1. Requirements
-Ensure you have [**Python 3.9+**](https://www.python.org/downloads/) installed on your system.
+### Step 1 — Install Python
+Download and install [**Python 3.9+**](https://www.python.org/downloads/) if you don't have it already.
 
-### 2. Setup Dependencies
+### Step 2 — Get the Code
+**Option A: Using Git**
 ```bash
-# Install the core library and dependencies
-pip install -r requirements.txt
+git clone https://github.com/bryan-kier/fb-group-auto-poster.git
+cd fb-group-auto-poster
+```
+**Option B: No Git? Download ZIP**
+Go to the repo page → click **Code** → **Download ZIP** → unzip it → open a terminal inside the folder.
 
-# Download the required browser engine
+### Step 3 — Install Dependencies
+```bash
+pip install -r requirements.txt
 playwright install chromium
 ```
 
----
+### Step 4 — Add Your Target Groups
+Open `sessions/groups.json` (auto-created on first run) and add your target Facebook groups:
+```json
+[
+  {
+    "name": "Group Name",
+    "username": "group_slug_or_id",
+    "status": "straight"
+  }
+]
+```
+- `straight` — Posts directly.
+- `pending` — Submits for admin approval.
 
-## 🚦 Getting Started
-
-### 1. Launch the Engine
-Simply run the main script:
+### Step 5 — Run It
 ```bash
 python main.py
 ```
-
-### 2. First-Time Onboarding
-The tool is designed for **Zero-Friction**:
-- **Login**: If no session is found, it will automatically open a browser for you to log in. Once you're in, hit **ENTER** in your terminal to save your cookies.
-- **Group List**: If you haven't set up your groups, it will automatically create `sessions/groups.json` using the template. Just add your target group IDs to that file.
+- **First run**: A browser window will open automatically. Log in to Facebook, wait for your feed to load, then press **ENTER** in the terminal. Your session is saved for future runs.
+- **Every run after**: Just run the script and enter your post content when prompted. That's it.
 
 ---
 
-## ⚙️ Configuration
+## ⚙️ Advanced Options
 
-### 🛡 User Data Isolation
-- **Private Data**: Everything stored in the `sessions/` directory (cookies, real group lists, logs) is **ignored by Git** and will never be pushed to your repository.
-- **Manual Account Switch**: If you ever want to re-login or switch accounts, set `CREATE_SESSION = True` in `main.py` temporarily.
+| Setting | Default | What it does |
+|---|---|---|
+| `MIN_DELAY_BETWEEN_GROUPS` | 5s | Minimum pause between posts |
+| `MAX_DELAY_BETWEEN_GROUPS` | 10s | Maximum pause between posts |
+| `MIN_TYPING_DELAY` | 10ms | Minimum keystroke delay |
+| `MAX_TYPING_DELAY` | 50ms | Maximum keystroke delay |
+| `MAX_GROUPS_PER_SESSION` | 9999 | Max groups posted per run |
+| `CREATE_SESSION` | `False` | Set to `True` to force re-login |
 
-### 📊 Operational Safety (`main.py`)
-Fine-tune the "humanity" of the bot:
-- `MIN_DELAY_BETWEEN_GROUPS`: Minimum rest interval between groups.
-- `MIN_TYPING_DELAY`: Variance in keystroke speed.
-- `MAX_GROUPS_PER_SESSION`: Daily safety cap.
+---
+
+> **Note:** All private data (cookies, group lists, logs) is stored in `sessions/` which is Git-ignored and never uploaded.
