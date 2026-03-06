@@ -1,0 +1,12 @@
+[
+  {
+    "name": "Example Public Group",
+    "username": "example.group.slug",
+    "status": "straight"
+  },
+  {
+    "name": "Example Admin Approval Group",
+    "username": "123456789012345",
+    "status": "pending"
+  }
+]
