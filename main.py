@@ -37,6 +37,7 @@ class FacebookGroupSpam:
         else:
             self.load_cookie()
             self.post_to_groups()
+        input("\n  Press ENTER to close the browser...")
         self.page.close()
         self.context.close()
 
