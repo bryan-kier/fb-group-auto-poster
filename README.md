@@ -17,7 +17,9 @@ A high-performance automation suite for programmatic content distribution across
 ## 🛠 Setup Guide
 
 ### Step 1 — Install Python
-Download and install [**Python 3.11+**]((https://www.python.org/downloads/release/python-3119/)) if you don't have it already.
+Download and install [**Python 3.11.9**](https://www.python.org/downloads/release/python-3119/) if you don't have it already.
+
+> ⚠️ Use Python **3.11** specifically. Newer versions (3.12+) may cause dependency errors.
 
 ### Step 2 — Get the Code
 **Option A: Using Git**
@@ -30,9 +32,11 @@ Go to the repo page → click **Code** → **Download ZIP** → unzip it → ope
 
 ### Step 3 — Install Dependencies
 ```bash
-pip install -r requirements.txt
-playwright install chromium
+python3.11 -m pip install -r requirements.txt
+python3.11 -m playwright install chromium
 ```
+
+> **If `python3.11` is not found**, close and reopen your terminal after installing Python, then try again.
 
 ### Step 4 — Add Your Target Groups
 Open `sessions/groups.json` (auto-created on first run) and add your target Facebook groups:
@@ -50,7 +54,7 @@ Open `sessions/groups.json` (auto-created on first run) and add your target Face
 
 ### Step 5 — Run It
 ```bash
-python main.py
+python3.11 main.py
 ```
 - **First run**: A browser window will open automatically. Log in to Facebook, wait for your feed to load, then press **ENTER** in the terminal. Your session is saved for future runs.
 - **Every run after**: Just run the script and enter your post content when prompted. That's it.
