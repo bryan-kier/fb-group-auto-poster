@@ -157,6 +157,7 @@ class FacebookGroupSpam:
                         MIN_TYPING_DELAY, MAX_TYPING_DELAY
                     ))
 
+                time.sleep(1)  # wait for video/link preview to render
                 self.human_delay(1500, 2500)
 
                 self.page.wait_for_selector(
