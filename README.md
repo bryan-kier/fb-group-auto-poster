@@ -17,7 +17,7 @@ A high-performance automation suite for programmatic content distribution across
 ## 🛠 Setup Guide
 
 ### Step 1 — Install Python
-Download and install [**Python 3.9+**](https://www.python.org/downloads/) if you don't have it already.
+Download and install [**Python 3.11+**]((https://www.python.org/downloads/release/python-3119/)) if you don't have it already.
 
 ### Step 2 — Get the Code
 **Option A: Using Git**
