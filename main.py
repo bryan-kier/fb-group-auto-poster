@@ -9,8 +9,8 @@ import re
 import os
 
 # Safety settings
-MIN_DELAY_BETWEEN_GROUPS = 5     # minimum seconds between posts
-MAX_DELAY_BETWEEN_GROUPS = 10    # maximum seconds between posts
+MIN_DELAY_BETWEEN_GROUPS = 60    # minimum seconds between posts
+MAX_DELAY_BETWEEN_GROUPS = 180   # maximum seconds between posts
 MIN_TYPING_DELAY = 10            # min ms delay between keystrokes
 MAX_TYPING_DELAY = 50            # max ms delay between keystrokes
 MAX_GROUPS_PER_SESSION = 9999    # process all groups
@@ -54,22 +54,28 @@ class FacebookGroupSpam:
             "https://www.facebook.com/groups/feed",
             "https://www.facebook.com/gaming",
             "https://www.facebook.com/news",
+            "https://www.facebook.com/events",
+            "https://www.facebook.com/friends",
+            "https://www.facebook.com/reels",
+            "https://www.facebook.com/memories",
+            "https://www.facebook.com/saved",
+            "https://www.facebook.com/groups/?ref=bookmarks",
         ]
         page = random.choice(random_pages)
         print(f"\t[*] Taking a human break, browsing Facebook...")
         self.page.goto(page, wait_until="domcontentloaded")
 
-        scrolls = random.randint(2, 4)
+        scrolls = random.randint(4, 8)
         for _ in range(scrolls):
-            scroll_amount = random.randint(300, 800)
+            scroll_amount = random.randint(400, 1200)
             self.page.mouse.wheel(0, scroll_amount)
-            time.sleep(random.uniform(1.0, 2.5))
+            time.sleep(random.uniform(1.5, 3.5))
 
         if random.random() > 0.5:
-            self.page.mouse.wheel(0, -random.randint(100, 400))
-            time.sleep(random.uniform(0.5, 1.5))
+            self.page.mouse.wheel(0, -random.randint(200, 600))
+            time.sleep(random.uniform(1.0, 2.5))
 
-        total_break = random.uniform(15, 30)
+        total_break = random.uniform(25, 45)
         remaining = max(0, total_break - (scrolls * 2))
         time.sleep(remaining)
         print(f"\t[*] Break done, back to posting...")
