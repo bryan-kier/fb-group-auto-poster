@@ -4,6 +4,8 @@ Uses only the standard library and binds to localhost.
 """
 
 import json
+import subprocess
+import sys
 import threading
 import webbrowser
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -204,11 +206,21 @@ class Handler(BaseHTTPRequestHandler):
         self._send(404, {"error": "not found"})
 
 
+def open_browser(url):
+    if not webbrowser.open(url) and sys.platform == "darwin":
+        subprocess.run(["open", url], check=False)
+
+
 def main():
-    server = ThreadingHTTPServer((HOST, PORT), Handler)
     url = f"http://{HOST}:{PORT}"
+    try:
+        server = ThreadingHTTPServer((HOST, PORT), Handler)
+    except OSError:
+        print(f"Already running at {url}. Opening it in your browser.")
+        open_browser(url)
+        return
     print(f"fb-group-auto-poster UI running at {url}  (Ctrl+C to quit)")
-    threading.Timer(0.5, lambda: webbrowser.open(url)).start()
+    threading.Timer(0.5, open_browser, [url]).start()
     try:
         server.serve_forever()
     except KeyboardInterrupt:

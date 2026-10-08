@@ -184,6 +184,9 @@ class Poster:
                 self.human_delay(300, 800)
                 self.page.goto(f"https://facebook.com/groups/{group['username']}", wait_until="domcontentloaded")
                 self.human_delay(1000, 2000)
+                if self.page.locator("xpath=//span[contains(text(), \"This content isn't available\")]").count():
+                    self.log("  Group unavailable (deleted, private, or this profile isn't a member). Skipping.")
+                    continue
                 self.page.wait_for_selector(composer_xpath, timeout=15_000).click()
                 self.human_delay(300, 700)
 
