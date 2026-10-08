@@ -11,6 +11,7 @@ A high-performance automation suite for programmatic content distribution across
 - **🍪 Session Preservation**: Persistent cookie management to bypass constant logins.
 - **📊 Activity Logging**: Real-time tracking of successful posts and automated cycle resets.
 - **🎯 Precision Targeting**: Easily configurable group queues via JSON.
+- **⏭️ Smart Skipping**: Groups that are deleted, private, or that your profile isn't a member of are skipped automatically.
 
 ---
 
@@ -53,7 +54,9 @@ Open `sessions/groups.json` (auto-created on first run) and add your target Face
 - `pending` — Submits for admin approval.
 
 ### Step 5 — Run It
-**Browser UI (easiest)** — manage groups, settings and posting from a local page:
+**Browser UI (easiest)** — manage groups, settings and posting from a local page.
+
+On macOS, just double-click **`Start Poster.command`**. Or run it manually:
 ```bash
 python3.11 app.py
 ```
@@ -72,6 +75,15 @@ python3.11 main.py
 
 | Setting | Default | What it does |
 |---|---|---|
+| `min_delay_between_groups` | 60s | Minimum pause between posts |
+| `max_delay_between_groups` | 180s | Maximum pause between posts |
+| `min_typing_delay` | 10ms | Minimum keystroke delay |
+| `max_typing_delay` | 50ms | Maximum keystroke delay |
+| `max_groups_per_session` | 9999 | Max groups posted per run |
+
+These can be changed in the browser UI (defaults are defined in `store.py`).
+
+---|---|---|
 | `MIN_DELAY_BETWEEN_GROUPS` | 5s | Minimum pause between posts |
 | `MAX_DELAY_BETWEEN_GROUPS` | 10s | Maximum pause between posts |
 | `MIN_TYPING_DELAY` | 10ms | Minimum keystroke delay |
