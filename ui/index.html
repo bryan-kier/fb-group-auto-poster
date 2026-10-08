@@ -1,0 +1,326 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Group Poster</title>
+<style>
+  :root {
+    --bg: #f6f7f9; --surface: #fff; --text: #1c1e21; --muted: #65676b; --border: #dcdfe4;
+    --accent: #1877f2; --accent-text: #fff; --danger: #d93025; --ok: #1a7f37; --warn: #9a6700;
+    --console: #14161a; --console-text: #d6dae0;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #121417; --surface: #1c1f24; --text: #e6e8eb; --muted: #9aa0a8; --border: #2f343b;
+      --accent: #4d94ff; --accent-text: #0b1020; --danger: #ff6b60; --ok: #4cc26a; --warn: #e3b341;
+      --console: #0c0e10;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text); font: 15px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+  header { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; padding: 16px 24px 0; max-width: 960px; margin: 0 auto; }
+  h1 { font-size: 18px; margin: 0; }
+  nav { display: flex; gap: 4px; max-width: 960px; margin: 12px auto 0; padding: 0 24px; border-bottom: 1px solid var(--border); overflow-x: auto; }
+  nav button { background: none; border: 0; border-bottom: 2px solid transparent; padding: 10px 14px; color: var(--muted); font: inherit; cursor: pointer; white-space: nowrap; }
+  nav button.active { color: var(--text); border-bottom-color: var(--accent); font-weight: 600; }
+  main { max-width: 960px; margin: 0 auto; padding: 20px 24px 60px; }
+  section { display: none; }
+  section.active { display: block; }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px; margin-bottom: 16px; }
+  .card h2 { font-size: 15px; margin: 0 0 4px; }
+  .hint { color: var(--muted); font-size: 13px; margin: 0 0 12px; }
+  label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 4px; }
+  textarea, input[type=text], input[type=number], select {
+    width: 100%; background: var(--bg); color: var(--text); border: 1px solid var(--border); border-radius: 8px; padding: 8px 10px; font: inherit;
+  }
+  textarea { min-height: 110px; resize: vertical; }
+  button.btn { background: var(--accent); color: var(--accent-text); border: 0; border-radius: 8px; padding: 9px 16px; font: inherit; font-weight: 600; cursor: pointer; }
+  button.btn:disabled { opacity: .5; cursor: not-allowed; }
+  button.btn.secondary { background: transparent; color: var(--text); border: 1px solid var(--border); }
+  button.btn.danger { background: transparent; color: var(--danger); border: 1px solid var(--border); }
+  .row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 14px; }
+  .banner { border-radius: 10px; padding: 12px 16px; margin-bottom: 16px; border: 1px solid var(--border); background: var(--surface); }
+  .banner.waiting { border-color: var(--warn); }
+  .banner p { margin: 0 0 10px; }
+  .pill { font-size: 12px; padding: 2px 10px; border-radius: 99px; background: var(--bg); border: 1px solid var(--border); color: var(--muted); }
+  .pill.running { color: var(--ok); } .pill.waiting { color: var(--warn); }
+  .bar { height: 8px; background: var(--bg); border: 1px solid var(--border); border-radius: 99px; overflow: hidden; margin: 10px 0 4px; }
+  .bar > div { height: 100%; background: var(--accent); width: 0; transition: width .3s; }
+  #console { background: var(--console); color: var(--console-text); border-radius: 8px; padding: 12px; height: 260px; overflow-y: auto; font: 12.5px/1.5 ui-monospace, SFMono-Regular, Menlo, monospace; white-space: pre-wrap; }
+  table { width: 100%; border-collapse: collapse; }
+  th { text-align: left; font-size: 12px; color: var(--muted); font-weight: 600; padding: 6px 8px; }
+  td { padding: 4px 8px; border-top: 1px solid var(--border); vertical-align: middle; }
+  td input, td select { padding: 5px 8px; }
+  .tbl-wrap { overflow-x: auto; }
+  .badge { font-size: 12px; color: var(--ok); white-space: nowrap; }
+  .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: var(--text); color: var(--bg); padding: 8px 16px; border-radius: 8px; opacity: 0; pointer-events: none; transition: opacity .2s; max-width: 90vw; }
+  .toast.show { opacity: 1; }
+  @media (max-width: 600px) { header, main, nav { padding-left: 16px; padding-right: 16px; } }
+</style>
+</head>
+<body>
+<header>
+  <h1>Group Poster</h1>
+  <span class="pill" id="status-pill">idle</span>
+</header>
+<nav id="tabs">
+  <button data-tab="run" class="active">Post</button>
+  <button data-tab="groups">Groups</button>
+  <button data-tab="settings">Settings</button>
+  <button data-tab="history">History</button>
+</nav>
+
+<main>
+  <!-- POST -->
+  <section id="tab-run" class="active">
+    <div id="prompt-banner" class="banner waiting" hidden>
+      <p id="prompt-text"></p>
+      <button class="btn" id="confirm-btn">Continue</button>
+    </div>
+
+    <div class="card">
+      <h2>What do you want to post?</h2>
+      <p class="hint">Paste a link or type your message. It is posted as-is to every group.</p>
+      <textarea id="content" placeholder="https://facebook.com/..."></textarea>
+      <div class="row" style="margin-top:12px">
+        <button class="btn" id="start-btn">Start posting</button>
+        <button class="btn danger" id="stop-btn" hidden>Stop</button>
+        <label style="margin:0;font-weight:400"><input type="checkbox" id="force-login"> Log in again (replace saved session)</label>
+      </div>
+      <p class="hint" id="session-hint" style="margin:10px 0 0"></p>
+    </div>
+
+    <div class="card">
+      <div class="row" style="justify-content:space-between"><h2>Progress</h2><span class="hint" id="progress-text" style="margin:0"></span></div>
+      <div class="bar"><div id="progress-bar"></div></div>
+      <div id="console"></div>
+    </div>
+  </section>
+
+  <!-- GROUPS -->
+  <section id="tab-groups">
+    <div class="card">
+      <h2>Add groups</h2>
+      <p class="hint">Paste Facebook group URLs, one per line.</p>
+      <textarea id="paste-urls" placeholder="https://www.facebook.com/groups/example"></textarea>
+      <div class="row" style="margin-top:12px"><button class="btn" id="add-groups-btn">Add groups</button></div>
+    </div>
+    <div class="card">
+      <div class="row" style="justify-content:space-between">
+        <h2 id="groups-title">Groups</h2>
+        <input type="text" id="group-filter" placeholder="Filter..." style="max-width:200px">
+      </div>
+      <p class="hint">Edit names or status inline; changes save automatically. <b>straight</b> posts directly, <b>pending</b> needs admin approval.</p>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Name</th><th>Group ID / slug</th><th>Status</th><th>Posted</th><th></th></tr></thead>
+          <tbody id="groups-body"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- SETTINGS -->
+  <section id="tab-settings">
+    <div class="card">
+      <h2>Timing</h2>
+      <p class="hint">Delays are randomized between the min and max.</p>
+      <div class="grid" id="num-fields"></div>
+    </div>
+    <div class="card">
+      <h2>Intro lines</h2>
+      <p class="hint">One per line. Some posts get a random intro placed above your content. Use the chance field above to control how often.</p>
+      <textarea id="set-intros"></textarea>
+    </div>
+    <div class="card">
+      <h2>Composer button text</h2>
+      <p class="hint">One per line. The text Facebook shows on the "write a post" box in a group. Add your language here if posting fails to start.</p>
+      <textarea id="set-composer" style="min-height:80px"></textarea>
+    </div>
+    <div class="row">
+      <button class="btn" id="save-settings-btn">Save settings</button>
+      <button class="btn secondary" id="reset-settings-btn">Restore defaults</button>
+      <button class="btn danger" id="reset-session-btn">Forget saved Facebook login</button>
+    </div>
+  </section>
+
+  <!-- HISTORY -->
+  <section id="tab-history">
+    <div class="card">
+      <div class="row" style="justify-content:space-between">
+        <h2 id="history-title">Posted this cycle</h2>
+        <button class="btn danger" id="reset-history-btn">Reset history</button>
+      </div>
+      <p class="hint">Groups listed here are skipped until every group has been posted to once, then the cycle resets.</p>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Group</th><th>Posted at</th></tr></thead>
+          <tbody id="history-body"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+</main>
+<div class="toast" id="toast"></div>
+
+<script>
+const $ = (id) => document.getElementById(id);
+const NUM_FIELDS = [
+  ["min_delay_between_groups", "Min delay between groups (s)"],
+  ["max_delay_between_groups", "Max delay between groups (s)"],
+  ["min_typing_delay", "Min typing delay (ms)"],
+  ["max_typing_delay", "Max typing delay (ms)"],
+  ["max_groups_per_session", "Max groups per run"],
+  ["browsing_break_every", "Browsing break every N posts (0 = off)"],
+  ["intro_chance", "Intro chance (%)"],
+];
+
+async function api(url, body) {
+  const opts = body === undefined ? {} : { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) };
+  const res = await fetch(url, opts);
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error || res.statusText);
+  return data;
+}
+function toast(msg) {
+  const t = $("toast"); t.textContent = msg; t.classList.add("show");
+  clearTimeout(toast.t); toast.t = setTimeout(() => t.classList.remove("show"), 2800);
+}
+const guard = (fn) => async (...a) => { try { await fn(...a); } catch (e) { toast(e.message); } };
+
+// ---- tabs
+$("tabs").addEventListener("click", (e) => {
+  const tab = e.target.dataset.tab; if (!tab) return;
+  document.querySelectorAll("nav button").forEach((b) => b.classList.toggle("active", b === e.target));
+  document.querySelectorAll("main section").forEach((s) => s.classList.toggle("active", s.id === "tab-" + tab));
+  if (tab === "groups" || tab === "history") loadGroups();
+});
+
+// ---- run / live state
+let logOffset = 0, lastStatus = "idle";
+async function poll() {
+  try {
+    const s = await api("/api/state?since=" + logOffset);
+    const con = $("console");
+    if (s.logs.length) {
+      const stick = con.scrollTop + con.clientHeight >= con.scrollHeight - 20;
+      con.textContent += (con.textContent ? "\n" : "") + s.logs.join("\n");
+      if (stick) con.scrollTop = con.scrollHeight;
+    }
+    if (s.log_offset < logOffset) con.textContent = s.logs.join("\n");  // new run reset the log
+    logOffset = s.log_offset;
+
+    const busy = s.status !== "idle";
+    const pill = $("status-pill");
+    pill.textContent = s.status; pill.className = "pill " + s.status;
+    $("start-btn").hidden = busy; $("stop-btn").hidden = !busy;
+    $("content").disabled = busy;
+    $("prompt-banner").hidden = !s.prompt;
+    if (s.prompt) {
+      $("prompt-text").textContent = s.prompt.message;
+      $("confirm-btn").textContent = { login: "I'm logged in", start: "Start posting now", close: "Close browser" }[s.prompt.kind] || "Continue";
+    }
+    const { done, total } = s.progress;
+    $("progress-bar").style.width = total ? (100 * done / total) + "%" : "0";
+    $("progress-text").textContent = total ? `${done} / ${total} groups` : "";
+    $("session-hint").textContent = s.has_session ? "A saved Facebook login was found." : "No saved login yet. A browser will open for you to log in the first time.";
+    if (lastStatus !== "idle" && s.status === "idle") loadGroups();
+    lastStatus = s.status;
+  } catch (e) { /* server restarting */ }
+}
+setInterval(poll, 1000); poll();
+
+$("start-btn").onclick = guard(async () => {
+  logOffset = 0; $("console").textContent = "";
+  await api("/api/run", { content: $("content").value, force_login: $("force-login").checked });
+  $("force-login").checked = false;
+});
+$("stop-btn").onclick = guard(() => api("/api/stop", {}));
+$("confirm-btn").onclick = guard(() => api("/api/confirm", {}));
+
+// ---- groups
+let groups = [], posted = {};
+async function loadGroups() {
+  const d = await api("/api/groups"); groups = d.groups; posted = d.posted;
+  renderGroups(); renderHistory();
+}
+let saveTimer;
+function saveGroups() {
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(guard(async () => { await api("/api/groups", { groups }); }), 400);
+}
+function cell(...children) { const td = document.createElement("td"); td.append(...children); return td; }
+function renderGroups() {
+  const q = $("group-filter").value.toLowerCase();
+  $("groups-title").textContent = `Groups (${groups.length})`;
+  const body = $("groups-body"); body.replaceChildren();
+  groups.forEach((g, i) => {
+    if (q && !(g.name + g.username).toLowerCase().includes(q)) return;
+    const name = Object.assign(document.createElement("input"), { type: "text", value: g.name });
+    name.oninput = () => { g.name = name.value; saveGroups(); };
+    const status = document.createElement("select");
+    ["straight", "pending"].forEach((v) => status.add(new Option(v, v, false, g.status === v)));
+    status.onchange = () => { g.status = status.value; saveGroups(); };
+    const del = Object.assign(document.createElement("button"), { className: "btn danger", textContent: "Remove" });
+    del.onclick = () => { groups.splice(i, 1); saveGroups(); renderGroups(); };
+    const badge = Object.assign(document.createElement("span"), { className: "badge", textContent: posted[g.username] ? "✓ " + posted[g.username].posted_at : "" });
+    const tr = document.createElement("tr");
+    tr.append(cell(name), cell(g.username), cell(status), cell(badge), cell(del));
+    body.append(tr);
+  });
+}
+$("group-filter").oninput = renderGroups;
+$("add-groups-btn").onclick = guard(async () => {
+  const r = await api("/api/groups/add", { text: $("paste-urls").value });
+  groups = r.groups; $("paste-urls").value = ""; renderGroups();
+  toast(`Added ${r.added.length}, ${r.duplicates.length} duplicate, ${r.invalid.length} invalid`);
+});
+
+// ---- history
+function renderHistory() {
+  const entries = Object.entries(posted).sort((a, b) => b[1].posted_at.localeCompare(a[1].posted_at));
+  $("history-title").textContent = `Posted this cycle (${entries.length}/${groups.length})`;
+  const body = $("history-body"); body.replaceChildren();
+  entries.forEach(([, v]) => { const tr = document.createElement("tr"); tr.append(cell(v.name), cell(v.posted_at)); body.append(tr); });
+}
+$("reset-history-btn").onclick = guard(async () => {
+  if (!confirm("Clear the posted history? Every group becomes eligible again.")) return;
+  await api("/api/history/reset", {}); await loadGroups(); toast("History cleared");
+});
+
+// ---- settings
+let defaults = {};
+function fillSettings(s) {
+  NUM_FIELDS.forEach(([k]) => { $("f-" + k).value = s[k]; });
+  $("set-intros").value = s.intros.join("\n");
+  $("set-composer").value = s.composer_texts.join("\n");
+}
+async function loadSettings() {
+  const grid = $("num-fields");
+  NUM_FIELDS.forEach(([k, label]) => {
+    const wrap = document.createElement("div");
+    const l = Object.assign(document.createElement("label"), { textContent: label, htmlFor: "f-" + k });
+    const i = Object.assign(document.createElement("input"), { type: "number", id: "f-" + k, min: 0 });
+    wrap.append(l, i); grid.append(wrap);
+  });
+  const d = await api("/api/settings"); defaults = d.defaults; fillSettings(d.settings);
+}
+const lines = (id) => $(id).value.split("\n").map((x) => x.trim()).filter(Boolean);
+$("save-settings-btn").onclick = guard(async () => {
+  const body = { intros: lines("set-intros"), composer_texts: lines("set-composer") };
+  NUM_FIELDS.forEach(([k]) => { body[k] = $("f-" + k).value; });
+  const r = await api("/api/settings", body); fillSettings(r.settings); toast("Settings saved");
+});
+$("reset-settings-btn").onclick = () => { fillSettings(defaults); toast("Defaults loaded. Click Save to keep them."); };
+$("reset-session-btn").onclick = guard(async () => {
+  if (!confirm("Delete the saved Facebook login? You will need to log in again on the next run.")) return;
+  await api("/api/session/reset", {}); toast("Saved login removed");
+});
+
+loadSettings().catch((e) => toast(e.message));
+loadGroups().catch((e) => toast(e.message));
+</script>
+</body>
+</html>

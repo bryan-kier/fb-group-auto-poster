@@ -53,6 +53,13 @@ Open `sessions/groups.json` (auto-created on first run) and add your target Face
 - `pending` — Submits for admin approval.
 
 ### Step 5 — Run It
+**Browser UI (easiest)** — manage groups, settings and posting from a local page:
+```bash
+python3.11 app.py
+```
+It opens http://127.0.0.1:8765 automatically. Everything below can be changed there.
+
+**Or the terminal version:**
 ```bash
 python3.11 main.py
 ```
